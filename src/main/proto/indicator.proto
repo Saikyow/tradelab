@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package indicator;
+
+
+service IndicatorService {
+  rpc ComputeSma(SmaRequest) returns (SmaResponse);
+}
+
+message SmaRequest {
+  repeated double values = 1;
+  int32 period = 2;
+}
+
+message SmaResponse {
+  repeated double result = 1;
+}
