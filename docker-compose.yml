@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: tradelab-db
+    environment:
+      POSTGRES_DB: tradelab
+      POSTGRES_USER: tradelab
+      POSTGRES_PASSWORD: tradelab
+
+    ports:
+      - "5433:5432"
+    volumes:
+     - tradelab-pgdata:/var/lib/postgresql/data
+
+volumes:
+  tradelab-pgdata:
