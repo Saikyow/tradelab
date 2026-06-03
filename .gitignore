@@ -1,42 +1,26 @@
-# Maven
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-# IntelliJ IDEA
-.idea/
-*.iws
-*.iml
-*.ipr
-
-# Eclipse
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-# VS Code
-.vscode/
-
-# macOS
+cd ~/Documents/tradelab
+cat > .gitignore << 'EOF'
+# OS
 .DS_Store
 
-# Logs
+# IDE
+.idea/
+*.iml
+.claude/
+
+# Java / Maven (backend)
+backend/target/
 *.log
-logs/
 
-# Spring Boot
-spring-pid
+# C++ / CMake (engine)
+engine/cmake-build-debug/
+engine/build/
+engine/cmake-build-*/
+engine/generated/
+*.o
+*.obj
 
-# Docker
-docker-compose.override.yml
-
-# Environment / secrets
-.env
-*.env
-application-local.yml
-application-local.properties
+# прочее
+EOF
+target/
+engine/
