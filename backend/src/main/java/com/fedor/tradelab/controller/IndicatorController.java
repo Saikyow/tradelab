@@ -32,8 +32,18 @@ public class IndicatorController {
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "14") int period
     ) {
-      List<Double> closes = loadCloses(symbol, interval, limit);
-      return indicatorService.sma(closes, period);
+//      List<Double> closes = loadCloses(symbol, interval, limit);
+//
+//      return indicatorService.sma(closes, period);
+        List<Double> closes = loadCloses(symbol, interval, limit);
+
+        long start = System.nanoTime();
+        List<Double> result = indicatorService.sma(closes, period);
+        long end = System.nanoTime();
+
+        System.out.println("Java SMA time ms: " + (end - start) / 1_000_000.0);
+
+        return result;
     }
 
     @GetMapping("/api/indicators/sma-engine")
@@ -43,9 +53,55 @@ public class IndicatorController {
             @RequestParam(defaultValue = "100") int limit,
             @RequestParam(defaultValue = "14") int period
     ){
-        List<Double> closes = loadCloses(symbol, interval, limit);
-        return engineClient.computeSma(closes, period);
+//        List<Double> closes = loadCloses(symbol, interval, limit);
+//        return engineClient.computeSma(closes, period);
 
+        List<Double> closes = loadCloses(symbol, interval, limit);
+
+        long start = System.nanoTime();
+        List<Double> result = engineClient.computeSma(closes, period);
+        long end = System.nanoTime();
+
+        System.out.println("C++ engine SMA time ms: " + (end - start) / 1_000_000.0);
+
+        return result;
+
+    }
+
+    @GetMapping("/api/indicators/ema-engine")
+    public List<Double> emaEngine(
+            @RequestParam String symbol,
+            @RequestParam String interval,
+            @RequestParam(defaultValue = "100") int limit,
+            @RequestParam(defaultValue = "14") int period
+    ){
+        List<Double> closes = loadCloses(symbol, interval, limit);
+
+        long start = System.nanoTime();
+        List<Double> result = engineClient.computeEma(closes, period);
+        long end = System.nanoTime();
+
+        System.out.println("C++ engine EMA time ms: " + (end - start) / 1_000_000.0);
+
+        return result;
+    }
+
+    @GetMapping("/api/indicators/rsi-engine")
+    public List<Double> rsiEngine(
+            @RequestParam String symbol,
+            @RequestParam String interval,
+            @RequestParam(defaultValue = "100") int limit,
+            @RequestParam(defaultValue = "14") int period
+    ){
+        List<Double> closes = loadCloses(symbol, interval, limit);
+
+        long start = System.nanoTime();
+        List<Double> result = engineClient.computeRsi(closes, period);
+        long end = System.nanoTime();
+
+        System.out.println("C++ engine RSI time ms: " + (end - start) / 1_000_000.0);
+
+        return result;
     }
 
     public List<Double> loadCloses(String symbol, String interval, int period){
