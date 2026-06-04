@@ -17,6 +17,10 @@ public:
     grpc::Status ComputeRsi(grpc::ServerContext* context,
                             const indicator::RsiRequest* request,
                             indicator::RsiResponse* response) override;
+
+    grpc::Status FindAnalogs(grpc::ServerContext* context,
+                             const indicator::FindAnalogsRequest* request,
+                             indicator::FindAnalogsResponse* response) override;
 };
 
 #endif //TRADELAB_ENGINE_SERVER_H

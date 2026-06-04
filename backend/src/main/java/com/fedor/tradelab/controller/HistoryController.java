@@ -1,30 +1,29 @@
 package com.fedor.tradelab.controller;
 
-import com.fedor.tradelab.model.Candle;
+import com.fedor.tradelab.model.HistoryLoadResponse;
 import com.fedor.tradelab.service.CandleService;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/candles")
-public class CandleController {
+@RequestMapping("/api/history")
+public class HistoryController {
 
     private final CandleService candleService;
 
-    public CandleController(CandleService candleService) {
+    public HistoryController(CandleService candleService) {
         this.candleService = candleService;
     }
 
-    @GetMapping
-    public List<Candle> candles(
+    @PostMapping("/load")
+    public HistoryLoadResponse load(
             @RequestParam String symbol,
             @RequestParam String interval,
-            @RequestParam(defaultValue = "100") int limit
+            @RequestParam int count
     ) {
-        return candleService.getCandles(symbol, interval, limit);
+        long total = candleService.loadHistory(symbol, interval, count);
+        return new HistoryLoadResponse(symbol, interval, count, total);
     }
 }

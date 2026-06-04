@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(
         name = "candles",
         uniqueConstraints = @UniqueConstraint(
-                columnNames = {"symbol", "interval_name", "open_timme"}
+                columnNames = {"symbol", "interval_name", "open_time"}
         )
 )
 public class CandleEntity {

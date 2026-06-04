@@ -1,9 +1,11 @@
 #include "server.h"
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <grpcpp/grpcpp.h>
 
@@ -125,6 +127,61 @@ grpc::Status SmaServiceImpl::ComputeRsi(grpc::ServerContext* /*context*/,
                 result->Add(100.0 - 100.0 / (1.0 + rs));
             }
         }
+    }
+
+    return grpc::Status::OK;
+}
+
+grpc::Status SmaServiceImpl::FindAnalogs(grpc::ServerContext* /*context*/,
+                                         const indicator::FindAnalogsRequest* request,
+                                         indicator::FindAnalogsResponse* response) {
+    const auto& current = request->current();
+    const auto& history = request->history();
+    const int k = request->k();
+    const int dim = current.size();
+
+    if (dim <= 0) {
+        return {grpc::StatusCode::INVALID_ARGUMENT, "current vector is empty"};
+    }
+    if (history.size() % dim != 0) {
+        return {grpc::StatusCode::INVALID_ARGUMENT, "history size is not a multiple of dim"};
+    }
+    if (k <= 0) {
+        return {grpc::StatusCode::INVALID_ARGUMENT, "k must be positive"};
+    }
+
+    const int n = history.size() / dim;
+
+    struct Match {
+        int index;
+        double distance;
+    };
+
+    std::vector<Match> matches;
+    matches.reserve(n);
+
+    for (int i = 0; i < n; ++i) {
+        double sum_sq = 0.0;
+        const int base = i * dim;
+        for (int d = 0; d < dim; ++d) {
+            const double diff = history[base + d] - current[d];
+            sum_sq += diff * diff;
+        }
+        matches.push_back({i, std::sqrt(sum_sq)});
+    }
+
+    const int take = std::min(k, static_cast<int>(matches.size()));
+    std::partial_sort(matches.begin(), matches.begin() + take, matches.end(),
+                      [](const Match& a, const Match& b) {
+                          return a.distance < b.distance;
+                      });
+
+    auto* out_matches = response->mutable_matches();
+    out_matches->Reserve(take);
+    for (int j = 0; j < take; ++j) {
+        auto* m = out_matches->Add();
+        m->set_index(matches[j].index);
+        m->set_distance(matches[j].distance);
     }
 
     return grpc::Status::OK;

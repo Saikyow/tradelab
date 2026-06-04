@@ -7,6 +7,7 @@ service IndicatorService {
   rpc ComputeSma(SmaRequest) returns (SmaResponse);
   rpc ComputeEma(EmaRequest) returns (EmaResponse);
   rpc ComputeRsi(RsiRequest) returns (RsiResponse);
+  rpc FindAnalogs(FindAnalogsRequest) returns (FindAnalogsResponse);
 }
 
 message SmaRequest {
@@ -34,4 +35,20 @@ message RsiRequest {
 
 message RsiResponse {
   repeated double result = 1;
+}
+
+message FindAnalogsRequest {
+  repeated double history = 1;
+  repeated double current = 2;
+  int32 k = 3;
+  int32 horizon = 4;
+}
+
+message AnalogMatch {
+  int32 index = 1;
+  double distance = 2;
+}
+
+message FindAnalogsResponse {
+  repeated AnalogMatch matches = 1;
 }
